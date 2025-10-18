@@ -2,14 +2,15 @@ from tradingagents.graph.trading_graph import TradingAgentsGraph
 from tradingagents.default_config import DEFAULT_CONFIG
 
 from dotenv import load_dotenv
+import datetime
 
 # Load environment variables from .env file
 load_dotenv()
 
 # Create a custom config
 config = DEFAULT_CONFIG.copy()
-config["deep_think_llm"] = "gpt-4o-mini"  # Use a different model
-config["quick_think_llm"] = "gpt-4o-mini"  # Use a different model
+config["deep_think_llm"] = "kimi-k2-0905-preview"  # Use a different model
+config["quick_think_llm"] = "kimi-k2-0905-preview"  # Use a different model
 config["max_debate_rounds"] = 1  # Increase debate rounds
 
 # Configure data vendors (default uses yfinance and alpha_vantage)
@@ -23,8 +24,11 @@ config["data_vendors"] = {
 # Initialize with custom config
 ta = TradingAgentsGraph(debug=True, config=config)
 
+print("Get yesterday's date")
+today = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+print(today)
 # forward propagate
-_, decision = ta.propagate("NVDA", "2024-05-10")
+_, decision = ta.propagate("EL", today)
 print(decision)
 
 # Memorize mistakes and reflect

@@ -72,24 +72,27 @@ class TradingAgentsGraph:
         )
 
         # Initialize LLMs
-        if self.config["llm_provider"].lower() == "openai" or self.config["llm_provider"] == "ollama" or self.config["llm_provider"] == "openrouter":
+        if self.config["llm_provider"].lower() == "moonshot":
             self.deep_thinking_llm = ChatOpenAI(model=self.config["deep_think_llm"], base_url=self.config["backend_url"])
             self.quick_thinking_llm = ChatOpenAI(model=self.config["quick_think_llm"], base_url=self.config["backend_url"])
-        elif self.config["llm_provider"].lower() == "anthropic":
-            self.deep_thinking_llm = ChatAnthropic(model=self.config["deep_think_llm"], base_url=self.config["backend_url"])
-            self.quick_thinking_llm = ChatAnthropic(model=self.config["quick_think_llm"], base_url=self.config["backend_url"])
-        elif self.config["llm_provider"].lower() == "google":
-            self.deep_thinking_llm = ChatGoogleGenerativeAI(model=self.config["deep_think_llm"])
-            self.quick_thinking_llm = ChatGoogleGenerativeAI(model=self.config["quick_think_llm"])
         else:
             raise ValueError(f"Unsupported LLM provider: {self.config['llm_provider']}")
         
-        # Initialize memories
-        self.bull_memory = FinancialSituationMemory("bull_memory", self.config)
-        self.bear_memory = FinancialSituationMemory("bear_memory", self.config)
-        self.trader_memory = FinancialSituationMemory("trader_memory", self.config)
-        self.invest_judge_memory = FinancialSituationMemory("invest_judge_memory", self.config)
-        self.risk_manager_memory = FinancialSituationMemory("risk_manager_memory", self.config)
+        # Initialize memories with unique names to avoid conflicts
+        instance_id = self.config.get('instance_id', '')
+        
+        # Add instance_id to memory collection names to make them unique
+        bull_name = f"bull_memory_{instance_id}" if instance_id else "bull_memory"
+        bear_name = f"bear_memory_{instance_id}" if instance_id else "bear_memory"
+        trader_name = f"trader_memory_{instance_id}" if instance_id else "trader_memory"
+        judge_name = f"invest_judge_memory_{instance_id}" if instance_id else "invest_judge_memory"
+        risk_name = f"risk_manager_memory_{instance_id}" if instance_id else "risk_manager_memory"
+        
+        self.bull_memory = FinancialSituationMemory(bull_name, self.config)
+        self.bear_memory = FinancialSituationMemory(bear_name, self.config)
+        self.trader_memory = FinancialSituationMemory(trader_name, self.config)
+        self.invest_judge_memory = FinancialSituationMemory(judge_name, self.config)
+        self.risk_manager_memory = FinancialSituationMemory(risk_name, self.config)
 
         # Create tool nodes
         self.tool_nodes = self._create_tool_nodes()
@@ -186,6 +189,7 @@ class TradingAgentsGraph:
         # Store current state for reflection
         self.curr_state = final_state
 
+        print(f"logging final state for {company_name} on {trade_date}")
         # Log state
         self._log_state(trade_date, final_state)
 
@@ -224,15 +228,25 @@ class TradingAgentsGraph:
             "final_trade_decision": final_state["final_trade_decision"],
         }
 
-        # Save to file
-        directory = Path(f"eval_results/{self.ticker}/TradingAgentsStrategy_logs/")
+        # # Save to file
+        directory = Path(f"eval_results/{trade_date}/TradingAgentsStrategy_logs/")
         directory.mkdir(parents=True, exist_ok=True)
 
         with open(
-            f"eval_results/{self.ticker}/TradingAgentsStrategy_logs/full_states_log_{trade_date}.json",
+            f"eval_results/{trade_date}/TradingAgentsStrategy_logs/full_states_log_{self.ticker}.json",
             "w",
         ) as f:
             json.dump(self.log_states_dict, f, indent=4)
+
+        # # Save to file
+        # directory = Path(f"eval_results/{self.ticker}/TradingAgentsStrategy_logs/")
+        # directory.mkdir(parents=True, exist_ok=True)
+
+        # with open(
+        #     f"eval_results/{self.ticker}/TradingAgentsStrategy_logs/full_states_log_{trade_date}.json",
+        #     "w",
+        # ) as f:
+        #     json.dump(self.log_states_dict, f, indent=4)
 
     def reflect_and_remember(self, returns_losses):
         """Reflect on decisions and update memory based on returns."""

@@ -1,0 +1,16 @@
+10.16 更改原版openai模型为moonshot api
+10.16 原版使用openai的embedding调取memory
+    - 更改为使用huggingface sentence-transformers
+10.16 原版使用openai拿取global news，需要更改
+    - 更改为
+10.17 更改trading_graph里结果保存路径
+
+10.18
+Error getting stockstats indicator data for indicator macd on 2025-09-04: time data "0" doesn't match format "%Y-%m-%d", at position 3774. You might want to try:
+    - passing `format` if your strings have a consistent format;
+    - passing `format='ISO8601'` if your strings are all ISO8601 but not necessarily in exactly the same format;     
+    - passing `format='mixed'`, and the format will be inferred for each element individually. You might want to use `dayfirst` alongside this.
+
+10.18
+Moonshot AI 出现rate limit，
+充值到500才能解除限制
