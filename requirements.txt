@@ -28,3 +28,4 @@ sentence-transformers
 openai
 tradingview-screener5
 rookiepy
+huggingface_hub

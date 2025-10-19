@@ -20,7 +20,7 @@ def scan_breakout(
             'name', 'close', 'High.3M', 'change', 'Perf.3M', 'Perf.6M', "ADRP", 'price_52_week_high'
         )
         .where(
-            col('is_primary') == True,
+            # col('is_primary') == True,
             col('exchange').isin(['NYSE', 'NASDAQ']),
             col('close') > min_close,
             col('market_cap_basic') > min_market_cap,
@@ -52,7 +52,7 @@ def query_stock(name: str):
     query = (
         Query()
         .select(
-            'name', 'close', 'High.3M', 'change', 'Perf.3M', 'Perf.6M', 'average_volume_30d_calc', 'RSI10', 'RSI30', "ADRP"
+            'name', 'exchange', 'close', 'High.3M', 'change', 'Perf.3M', 'Perf.6M', 'Perf.5Y', 'average_volume_30d_calc', 'RSI10', 'RSI30', 'ADRP', 'is_primary'
         )
         .where(col('name') == name)
     )

@@ -2,6 +2,7 @@ import subprocess
 import os
 import sys
 from read_json import *
+import datetime
 
 # for i in range(5):  # 调用5次
 #     result = subprocess.run(['python', 'target.py'], capture_output=True, text=True)
@@ -31,9 +32,11 @@ def run_research_a_stock(ticker:str, date:str):
     save_each_report(date, ticker)
 
 def main():
-    ticker = "EL"
-    date = "2025-10-17"
-    run_research_a_stock(ticker, date)
+    list_of_ticker = ["TSLA", "META", "GOOGL"]
+    # ticker = "U"
+    date = "2020-9-1"
+    for ticker in list_of_ticker:
+        run_research_a_stock(ticker, date)
 
 if __name__ == "__main__":
     main()

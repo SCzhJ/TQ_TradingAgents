@@ -14,3 +14,9 @@ Error getting stockstats indicator data for indicator macd on 2025-09-04: time d
 10.18
 Moonshot AI 出现rate limit，
 充值到500才能解除限制
+
+10.19
+sentence transformer有的时候会自动下载，
+我们手动下载到memory.py的相应文件夹里
+先pip安装huggingface
+huggingface-cli download sentence-transformers/all-MiniLM-L6-v2 ^ --local-dir ./all-MiniLM-L6-v2

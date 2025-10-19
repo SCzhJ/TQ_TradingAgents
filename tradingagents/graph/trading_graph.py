@@ -178,7 +178,17 @@ class TradingAgentsGraph:
                 if len(chunk["messages"]) == 0:
                     pass
                 else:
-                    chunk["messages"][-1].pretty_print()
+                    try:
+                        chunk["messages"][-1].pretty_print()
+                    except UnicodeEncodeError:
+                        # 使用替代字符处理无法编码的字符
+                        message_str = str(chunk["messages"][-1])
+                        try:
+                            # 尝试使用 replace 错误处理模式
+                            print(message_str.encode('gbk', errors='replace').decode('gbk'))
+                        except:
+                            # 如果仍然失败，尝试写入到日志文件
+                            print("无法记录消息内容")
                     trace.append(chunk)
 
             final_state = trace[-1]
