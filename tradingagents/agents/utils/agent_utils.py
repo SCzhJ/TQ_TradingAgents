@@ -24,6 +24,9 @@ def create_msg_delete():
     def delete_messages(state):
         """Clear messages and add placeholder for Anthropic compatibility"""
         messages = state["messages"]
+
+        # the following is a test message to see before delete
+        # print(">>> DELETE sees the following messages:\n", state["messages"])
         
         # Remove all messages
         removal_operations = [RemoveMessage(id=m.id) for m in messages]

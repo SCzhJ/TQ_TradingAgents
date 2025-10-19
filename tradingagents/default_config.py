@@ -13,6 +13,7 @@ DEFAULT_CONFIG = {
     "deep_think_llm": "kimi-k2-0905-preview",
     "quick_think_llm": "kimi-k2-0905-preview",
     "backend_url": "https://api.moonshot.cn/v1",
+    "api_key": "",
     # Debate and discussion settings
     "max_debate_rounds": 1,
     "max_risk_discuss_rounds": 1,

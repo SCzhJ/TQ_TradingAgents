@@ -17,8 +17,26 @@ load_dotenv()
 
 # Create a custom config
 config = DEFAULT_CONFIG.copy()
-config["deep_think_llm"] = "kimi-k2-0905-preview"  # Use a different model
-config["quick_think_llm"] = "kimi-k2-0905-preview"  # Use a different model
+
+LLM_PROVIDER = os.getenv("LLM_PROVIDER")
+config["llm_provider"] = LLM_PROVIDER
+if LLM_PROVIDER == "moonshot":
+    config["backend_url"] = "https://api.moonshot.cn/v1"
+    config["api_key"] = os.getenv("MOONSHOT_API_KEY")
+    config["deep_think_llm"] = "kimi-k2-0905-preview"  # Use a different model
+    config["quick_think_llm"] = "kimi-k2-0905-preview"  # Use a different model
+    if not config["api_key"]:
+        raise ValueError("MOONSHOT_API_KEY not found in environment variables")
+elif LLM_PROVIDER == "siliconflow":
+    config["backend_url"] = "https://api.siliconflow.cn/v1"
+    config["api_key"] = os.getenv("SILICONFLOW_API_KEY")
+    config["deep_think_llm"] = "Qwen/Qwen3-235B-A22B-Instruct-2507"
+    config["quick_think_llm"] = "Qwen/Qwen3-30B-A3B-Instruct-2507"  # Use a different model
+    if not config["api_key"]:
+        raise ValueError("SILICONFLOW_API_KEY not found in environment variables")
+else:
+    raise ValueError(f"Unsupported LLM provider: {LLM_PROVIDER}")
+
 config["max_debate_rounds"] = 1  # Increase debate rounds
 
 # Configure data vendors (default uses yfinance and alpha_vantage)

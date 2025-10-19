@@ -4,6 +4,8 @@ import json
 
 
 def get_json(date:str, ticker:str):
+    if not os.path.exists(f"eval_results/{date}/TradingAgentsStrategy_logs"):
+        os.makedirs(f"eval_results/{date}/TradingAgentsStrategy_logs")
     with open(f"eval_results/{date}/TradingAgentsStrategy_logs/full_states_log_{ticker}.json", "r") as f:
         data = json.load(f)
     return data

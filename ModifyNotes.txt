@@ -20,3 +20,6 @@ sentence transformer有的时候会自动下载，
 我们手动下载到memory.py的相应文件夹里
 先pip安装huggingface
 huggingface-cli download sentence-transformers/all-MiniLM-L6-v2 ^ --local-dir ./all-MiniLM-L6-v2
+
+10.19
+尝试siliconflow的qwen3 235 think

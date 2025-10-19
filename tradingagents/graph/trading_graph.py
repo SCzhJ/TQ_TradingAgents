@@ -71,10 +71,28 @@ class TradingAgentsGraph:
             exist_ok=True,
         )
 
+        print(f"llm_provider: {self.config['llm_provider']}")
+        print(f"deep_thinking_llm: {self.config['deep_think_llm']}")
+        print(f"quick_thinking_llm: {self.config['quick_think_llm']}")
         # Initialize LLMs
         if self.config["llm_provider"].lower() == "moonshot":
-            self.deep_thinking_llm = ChatOpenAI(model=self.config["deep_think_llm"], base_url=self.config["backend_url"])
-            self.quick_thinking_llm = ChatOpenAI(model=self.config["quick_think_llm"], base_url=self.config["backend_url"])
+            self.deep_thinking_llm = ChatOpenAI(model=self.config["deep_think_llm"], 
+                                                api_key=self.config["api_key"],
+                                                base_url=self.config["backend_url"],
+                                                )
+            self.quick_thinking_llm = ChatOpenAI(model=self.config["quick_think_llm"], 
+                                                api_key=self.config["api_key"],
+                                                base_url=self.config["backend_url"],
+                                                )
+        elif self.config["llm_provider"].lower() == "siliconflow":
+            self.deep_thinking_llm = ChatOpenAI(model=self.config["deep_think_llm"], 
+                                                api_key=self.config["api_key"],
+                                                base_url=self.config["backend_url"],
+                                                )
+            self.quick_thinking_llm = ChatOpenAI(model=self.config["quick_think_llm"], 
+                                                api_key=self.config["api_key"],
+                                                base_url=self.config["backend_url"],
+                                                )
         else:
             raise ValueError(f"Unsupported LLM provider: {self.config['llm_provider']}")
         

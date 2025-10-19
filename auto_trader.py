@@ -4,14 +4,6 @@ import sys
 from read_json import *
 import datetime
 
-# for i in range(5):  # 调用5次
-#     result = subprocess.run(['python', 'target.py'], capture_output=True, text=True)
-#     print(f"第 {i+1} 次调用输出：")
-#     print(result.stdout)
-#     if result.stderr:
-#         print("错误信息：", result.stderr)
-#     time.sleep(1)  # 可选：间隔1秒
-
 def run_research_a_stock(ticker:str, date:str):
     print(f"调用 research_a_stock {ticker} {date}")
     print(f"starting at {datetime.datetime.now()}")
@@ -32,9 +24,9 @@ def run_research_a_stock(ticker:str, date:str):
     save_each_report(date, ticker)
 
 def main():
-    list_of_ticker = ["TSLA", "META", "GOOGL"]
+    list_of_ticker = ["PLTR", "NVDA", "AMD", "INTC", "TSM", "MSFT", "GOOGL"]
     # ticker = "U"
-    date = "2020-9-1"
+    date = "2024-10-10"
     for ticker in list_of_ticker:
         run_research_a_stock(ticker, date)
 
