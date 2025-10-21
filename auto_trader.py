@@ -3,6 +3,7 @@ import os
 import sys
 from read_json import *
 import datetime
+from trading_view_screener import scan_breakout
 
 def run_research_a_stock(ticker:str, date:str):
     print(f"调用 research_a_stock {ticker} {date}")
@@ -24,11 +25,18 @@ def run_research_a_stock(ticker:str, date:str):
     save_each_report(date, ticker)
 
 def main():
-    list_of_ticker = ["PLTR", "NVDA", "AMD", "INTC", "TSM", "MSFT", "GOOGL"]
-    # ticker = "U"
-    date = "2024-10-10"
+    df = scan_breakout()
+    formatted_date = datetime.datetime.now().strftime("%Y-%m-%d")
+    if not os.path.exists(f"eval_results/{formatted_date}"):
+        os.makedirs(f"eval_results/{formatted_date}")
+    with open(f"eval_results/{formatted_date}/tickers.txt", "w") as f:
+        f.write(formatted_date)
+        f.write("\n")
+        f.write(str(df))
+    list_of_ticker = df["name"].tolist()
+    
     for ticker in list_of_ticker:
-        run_research_a_stock(ticker, date)
+        run_research_a_stock(ticker, formatted_date)
 
 if __name__ == "__main__":
     main()

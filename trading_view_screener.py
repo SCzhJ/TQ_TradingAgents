@@ -2,7 +2,7 @@ from tradingview_screener import Query, col
 import pandas as pd
 
 def scan_breakout(
-    breakout_percent:int=0.05,
+    breakout_percent:int=0.03,
     min_close:float=10,
     min_market_cap:float=1_000_000_000,
     min_perf_6M:float=30,

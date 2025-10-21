@@ -42,6 +42,7 @@ from .propagation import Propagator
 from .reflection import Reflector
 from .signal_processing import SignalProcessor
 
+from .rate_control import ThrottledChatOpenAI
 
 class TradingAgentsGraph:
     """Main class that orchestrates the trading agents framework."""
@@ -74,27 +75,15 @@ class TradingAgentsGraph:
         print(f"llm_provider: {self.config['llm_provider']}")
         print(f"deep_thinking_llm: {self.config['deep_think_llm']}")
         print(f"quick_thinking_llm: {self.config['quick_think_llm']}")
+        print(f"Token Per Minute limit: {self.config["tpm"]}")
         # Initialize LLMs
-        if self.config["llm_provider"].lower() == "moonshot":
-            self.deep_thinking_llm = ChatOpenAI(model=self.config["deep_think_llm"], 
-                                                api_key=self.config["api_key"],
-                                                base_url=self.config["backend_url"],
-                                                )
-            self.quick_thinking_llm = ChatOpenAI(model=self.config["quick_think_llm"], 
-                                                api_key=self.config["api_key"],
-                                                base_url=self.config["backend_url"],
-                                                )
-        elif self.config["llm_provider"].lower() == "siliconflow":
-            self.deep_thinking_llm = ChatOpenAI(model=self.config["deep_think_llm"], 
-                                                api_key=self.config["api_key"],
-                                                base_url=self.config["backend_url"],
-                                                )
-            self.quick_thinking_llm = ChatOpenAI(model=self.config["quick_think_llm"], 
-                                                api_key=self.config["api_key"],
-                                                base_url=self.config["backend_url"],
-                                                )
-        else:
-            raise ValueError(f"Unsupported LLM provider: {self.config['llm_provider']}")
+        self.deep_thinking_llm = ThrottledChatOpenAI(
+            tpm=self.config["tpm"],
+            model=self.config["deep_think_llm"], 
+            api_key=self.config["api_key"],
+            base_url=self.config["backend_url"],
+            )
+        self.quick_thinking_llm = self.deep_thinking_llm
         
         # Initialize memories with unique names to avoid conflicts
         instance_id = self.config.get('instance_id', '')

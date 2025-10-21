@@ -18,6 +18,8 @@ load_dotenv()
 # Create a custom config
 config = DEFAULT_CONFIG.copy()
 
+config["tpm"] = os.getenv("TPM", 1500)
+
 LLM_PROVIDER = os.getenv("LLM_PROVIDER")
 config["llm_provider"] = LLM_PROVIDER
 if LLM_PROVIDER == "moonshot":
@@ -34,6 +36,13 @@ elif LLM_PROVIDER == "siliconflow":
     config["quick_think_llm"] = "Qwen/Qwen3-30B-A3B-Instruct-2507"  # Use a different model
     if not config["api_key"]:
         raise ValueError("SILICONFLOW_API_KEY not found in environment variables")
+elif LLM_PROVIDER == "dashscope":
+    config["backend_url"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    config["api_key"] = os.getenv("DASHSCOPE_API_KEY")
+    config["deep_think_llm"] = "qwen3-max"
+    config["quick_think_llm"] = "qwen3-max"  # Use a different model
+    if not config["api_key"]:
+        raise ValueError("DASHSCOPE_API_KEY not found in environment variables")
 else:
     raise ValueError(f"Unsupported LLM provider: {LLM_PROVIDER}")
 

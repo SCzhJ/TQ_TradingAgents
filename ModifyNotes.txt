@@ -23,3 +23,6 @@ huggingface-cli download sentence-transformers/all-MiniLM-L6-v2 ^ --local-dir ./
 
 10.19
 尝试siliconflow的qwen3 235 think
+
+tbc added siliconflow qwen, but rate limit is too much
+tomorrow: check tiktoken, try kimi-k2's TPM solution
