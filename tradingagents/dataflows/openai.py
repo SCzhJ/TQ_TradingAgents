@@ -74,7 +74,7 @@ def get_stock_news_openai(query, start_date, end_date):
         }
     ]
 
-    response = chat_with_web_search(client, messages, config["quick_think_llm"])
+    response = chat_with_web_search(client, messages, "kimi-k2-0905-preview")
     return response
 
 def get_global_news_openai(curr_date, look_back_days=7, limit=5):
@@ -95,7 +95,7 @@ def get_global_news_openai(curr_date, look_back_days=7, limit=5):
         }
     ]
 
-    response = chat_with_web_search(client, messages, config["quick_think_llm"])
+    response = chat_with_web_search(client, messages, "kimi-k2-0905-preview")
     return response
 
 def get_fundamentals_openai(ticker, curr_date):
@@ -116,7 +116,7 @@ def get_fundamentals_openai(ticker, curr_date):
         }
     ]
 
-    response = chat_with_web_search(client, messages, config["quick_think_llm"])
+    response = chat_with_web_search(client, messages, "kimi-k2-0905-preview")
     return response
 
 # from openai import OpenAI

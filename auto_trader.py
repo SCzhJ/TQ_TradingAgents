@@ -8,7 +8,7 @@ from trading_view_screener import scan_breakout
 def run_research_a_stock(ticker:str, date:str):
     print(f"调用 research_a_stock {ticker} {date}")
     print(f"starting at {datetime.datetime.now()}")
-    print("this takes about 20 minutes")
+    print("this takes about 15-20 minutes")
     print("researching ...")
     result = subprocess.run([sys.executable, 'research_a_stock.py', ticker, date], capture_output=True, text=True)
     # 将stdout和stderr分别存到output文件夹里的{ticker}_stdout.txt和{ticker}_stderr.txt
@@ -29,7 +29,7 @@ def main():
     formatted_date = datetime.datetime.now().strftime("%Y-%m-%d")
     if not os.path.exists(f"eval_results/{formatted_date}"):
         os.makedirs(f"eval_results/{formatted_date}")
-    with open(f"eval_results/{formatted_date}/tickers.txt", "w") as f:
+    with open(f"eval_results/{formatted_date}/tickers.txt", "a") as f:
         f.write(formatted_date)
         f.write("\n")
         f.write(str(df))
