@@ -22,10 +22,6 @@ redis
 chainlit
 rich
 questionary
-langchain_anthropic
-langchain-google-genai
-sentence-transformers
 openai
-tradingview-screener5
-rookiepy
-huggingface_hub
+tradingview-screener
+dashscope

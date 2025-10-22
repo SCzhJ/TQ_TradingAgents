@@ -49,45 +49,24 @@ def scan_breakout(
     return df
 
 def scan_breakout_3timeframes(
-    breakout_percent:int=0.03,
-    min_close:float=10,
+    breakout_percent:int=0.02,
+    min_close:float=20,
     min_market_cap:float=1_000_000_000,
-    min_perf_6M:float=10,
+    min_perf_6M:float=20,
+    min_perf_5Y:float=50,
     min_volume_30d:float=1_000_000,
     min_rsi30:float=45,
-    max_rsi30:float=75,
-    min_change:float=-1,
-    max_adrp:float=10,
-    scan_limit:int=50,
-    breakout_limit:int=25,
+    max_rsi30:float=80,
+    min_change:float=1,
+    max_adrp:float=8,
+    scan_limit:int=90,
+    breakout_limit:int=60,
     ):
-    query = (
-        Query()
-        .select(
-            'name', 'close', 'High.3M', 'change', 'Perf.3M', 'Perf.6M', "ADRP", 'price_52_week_high'
-        )
-        .where(
-            # col('is_primary') == True,
-            col('exchange').isin(['NYSE', 'NASDAQ']),
-            col('close') > min_close,
-            col('market_cap_basic') > min_market_cap,
-            col('Perf.6M') > min_perf_6M,
-            col('average_volume_30d_calc') > min_volume_30d,
-            col('RSI30').between(min_rsi30, max_rsi30),
-            col('change') > min_change,
-            col('ADRP') < max_adrp,
-        )
-        .order_by('Perf.6M', ascending=False)
-        .limit(scan_limit)
-    )
-    total, df_6M = query.get_scanner_data()
-    print(f"Find {total} stocks, top Perf.6M")
-    print(df_6M)
 
     query = (
         Query()
         .select(
-            'name', 'close', 'High.3M', 'change', 'Perf.3M', 'Perf.6M', "ADRP", 'price_52_week_high'
+            'name', 'close', 'High.3M', 'change', 'Perf.3M', 'Perf.6M', "ADRP", 'price_52_week_high', "RSI30"
         )
         .where(
             # col('is_primary') == True,
@@ -95,6 +74,7 @@ def scan_breakout_3timeframes(
             col('close') > min_close,
             col('market_cap_basic') > min_market_cap,
             col('Perf.6M') > min_perf_6M,
+            col('Perf.5Y') > min_perf_5Y,
             col('average_volume_30d_calc') > min_volume_30d,
             col('RSI30').between(min_rsi30, max_rsi30),
             col('change') > min_change,
@@ -110,7 +90,7 @@ def scan_breakout_3timeframes(
     query = (
         Query()
         .select(
-            'name', 'close', 'High.3M', 'change', 'Perf.3M', 'Perf.6M', "ADRP", 'price_52_week_high'
+            'name', 'close', 'High.3M', 'change', 'Perf.3M', 'Perf.6M', "ADRP", 'price_52_week_high', "RSI30"
         )
         .where(
             # col('is_primary') == True,
@@ -118,6 +98,7 @@ def scan_breakout_3timeframes(
             col('close') > min_close,
             col('market_cap_basic') > min_market_cap,
             col('Perf.6M') > min_perf_6M,
+            col('Perf.5Y') > min_perf_5Y,
             col('average_volume_30d_calc') > min_volume_30d,
             col('RSI30').between(min_rsi30, max_rsi30),
             col('change') > min_change,
@@ -130,15 +111,39 @@ def scan_breakout_3timeframes(
     print(f"Find {total} stocks, top Perf.1M")
     print(df_1M)
 
+    query = (
+        Query()
+        .select(
+            'name', 'close', 'High.3M', 'change', 'Perf.3M', 'Perf.6M', "ADRP", 'price_52_week_high', "RSI30"
+        )
+        .where(
+            # col('is_primary') == True,
+            col('exchange').isin(['NYSE', 'NASDAQ']),
+            col('close') > min_close,
+            col('market_cap_basic') > min_market_cap,
+            col('Perf.6M') > min_perf_6M,
+            col('Perf.5Y') > min_perf_5Y,
+            col('average_volume_30d_calc') > min_volume_30d,
+            col('RSI30').between(min_rsi30, max_rsi30),
+            col('change') > min_change,
+            col('ADRP') < max_adrp,
+        )
+        .order_by('Perf.6M', ascending=False)
+        .limit(scan_limit)
+    )
+    total, df_6M = query.get_scanner_data()
+    print(f"Find {total} stocks, top Perf.6M")
+    print(df_6M)
+
     # concatenate all 3 dataframes without repetition
-    df = pd.concat([df_6M, df_3M, df_1M]).drop_duplicates(subset=['name'])
+    df = pd.concat([df_3M, df_1M, df_6M]).drop_duplicates(subset=['name'])
     print("-----------------")
-    print(f"Breakouts: {len(df)}")
     df= df[df['close'] * (1 + breakout_percent) >= df['High.3M']]
     # Order based on close/price_52_week_high ratio
     df['ratio'] = df['close'] / df['price_52_week_high']
     df = df.nlargest(breakout_limit, 'ratio')
     df = df.reset_index(drop=True)
+    print(f"Breakouts: {len(df)}")
     print(df)
     return df
 
@@ -154,7 +159,7 @@ def query_stock(name: str):
     return df
 
 def main():
-    df = scan_breakout()
+    df = scan_breakout_3timeframes()
 
 if __name__ == '__main__':
     main()

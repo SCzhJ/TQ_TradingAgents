@@ -4,9 +4,10 @@ import json
 
 
 def get_json(date:str, ticker:str):
-    if not os.path.exists(f"eval_results/{date}/TradingAgentsStrategy_logs"):
-        os.makedirs(f"eval_results/{date}/TradingAgentsStrategy_logs")
-    with open(f"eval_results/{date}/TradingAgentsStrategy_logs/full_states_log_{ticker}.json", "r") as f:
+    save_path = os.getenv("SAVE_FOLDER")
+    if not os.path.exists(f"{save_path}/eval_results/{date}/TradingAgentsStrategy_logs"):
+        os.makedirs(f"{save_path}/eval_results/{date}/TradingAgentsStrategy_logs")
+    with open(f"{save_path}/eval_results/{date}/TradingAgentsStrategy_logs/full_states_log_{ticker}.json", "r") as f:
         data = json.load(f)
     return data
 
@@ -58,11 +59,12 @@ def save_in_txt(date:str, ticker:str, report:str, name:str):
     '''
     保存每个报告的txt文件
     '''
+    save_path = os.getenv("SAVE_FOLDER")
     # make directory
-    if not os.path.exists(f"eval_results/{date}/reports/{ticker}"):
-        os.makedirs(f"eval_results/{date}/reports/{ticker}")
+    if not os.path.exists(f"{save_path}/eval_results/{date}/reports/{ticker}"):
+        os.makedirs(f"{save_path}/eval_results/{date}/reports/{ticker}")
     
-    with open(f"eval_results/{date}/reports/{ticker}/{ticker}_{name}.txt", "w", encoding='utf-8') as f:
+    with open(f"{save_path}/eval_results/{date}/reports/{ticker}/{ticker}_{name}.txt", "w", encoding='utf-8') as f:
         f.write(report)
 
 def save_each_report(date:str, ticker:str):

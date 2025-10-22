@@ -65,10 +65,11 @@ _, decision = ta.propagate(args.ticker, args.date)
 # decision = "BUY" # a test variable
 print("decision:", decision)
 
+save_path = os.getenv("SAVE_FOLDER")
 # 保存决策到txt文件
-if not os.path.exists(f"eval_results/{args.date}/decisions"):
-    os.makedirs(f"eval_results/{args.date}/decisions")
-with open(f"eval_results/{args.date}/decisions/{args.ticker}.txt", "w") as f:
+if not os.path.exists(f"{save_path}/eval_results/{args.date}/decisions"):
+    os.makedirs(f"{save_path}/eval_results/{args.date}/decisions")
+with open(f"{save_path}/eval_results/{args.date}/decisions/{args.ticker}.txt", "w") as f:
     f.write(decision)
 
 # test

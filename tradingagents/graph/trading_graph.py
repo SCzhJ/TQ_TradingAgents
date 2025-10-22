@@ -245,12 +245,13 @@ class TradingAgentsGraph:
             "final_trade_decision": final_state["final_trade_decision"],
         }
 
+        save_path = os.getenv("SAVE_FOLDER")
         # # Save to file
-        directory = Path(f"eval_results/{trade_date}/TradingAgentsStrategy_logs/")
+        directory = Path(f"{save_path}/eval_results/{trade_date}/TradingAgentsStrategy_logs/")
         directory.mkdir(parents=True, exist_ok=True)
 
         with open(
-            f"eval_results/{trade_date}/TradingAgentsStrategy_logs/full_states_log_{self.ticker}.json",
+            f"{save_path}/eval_results/{trade_date}/TradingAgentsStrategy_logs/full_states_log_{self.ticker}.json",
             "w",
         ) as f:
             json.dump(self.log_states_dict, f, indent=4)
