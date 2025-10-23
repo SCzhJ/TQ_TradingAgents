@@ -1,6 +1,8 @@
 # 读取full_states_log_EL.json文件
 import os
 import json
+import datetime
+
 
 
 def get_json(date:str, ticker:str):
@@ -72,6 +74,42 @@ def save_each_report(date:str, ticker:str):
     for key, value in all_report.items():
         save_in_txt(date, ticker, value, key)
 
+def calculate_previous_dates(current_date:str, look_back:int=30):
+    '''
+    计算之前的look_back天的日期
+    '''
+    # check current_date in format of %Y-%m-%d, if not throw error
+    date_format = "%Y-%m-%d"
+    try:
+        current_date = datetime.datetime.strptime(current_date, date_format)
+    except ValueError:
+        raise ValueError("current_date must be in format of %Y-%m-%d")
+    previous_dates = [current_date.strftime(date_format)]
+    for i in range(1, look_back+1):
+        previous_date = current_date - datetime.timedelta(days=i)
+        previous_dates.append(previous_date.strftime(date_format))
+    return previous_dates
+
+def get_previous_tickers(date:str, look_back:int=30):
+    '''
+    获取之前look_back天的所有股票
+    '''
+    previous_dates = calculate_previous_dates(date, look_back)
+    previous_tickers = []
+    save_path = os.getenv("SAVE_FOLDER")
+    for previous_date in previous_dates:
+        if not os.path.exists(f"{save_path}/eval_results/{previous_date}/decisions"):
+            print("path: ", f"{save_path}/eval_results/{previous_date}/decisions")
+            print(f"{previous_date} has no decisions folder")
+            continue
+        # list all files in the folder in the format of {ticker_name}.txt, and record ticker_name
+        files = os.listdir(f"{save_path}/eval_results/{previous_date}/decisions")
+        print(files)
+        for file in files:
+            if file.endswith(".txt"):
+                ticker_name = file.split(".")[0]
+                previous_tickers.append(ticker_name)
+    return previous_tickers
 
 if __name__ == "__main__":
     date = "2025-10-17"
