@@ -5,6 +5,7 @@ import chromadb
 from chromadb.config import Settings
 from dashscope import TextEmbedding
 from dotenv import load_dotenv
+import time
 
 _WINDOW = 8192      # 与 _MAX_CHARS 保持一致
 
@@ -43,7 +44,26 @@ class FinancialSituationMemory:
                 docs.append(chunk)
                 advices.append(rec)
                 ids.append(f"{offset + idx}_{seq}")          # 唯一 ID
-                embeddings.append(self._embed_one(chunk))
+                try:
+                    embedding_one = self._embed_one(chunk)
+                except Exception as e:
+                    print(f"Embedding 失败: {e}")
+                    max_retries = 5
+                    i = 0
+                    time.sleep(3)
+                    print(f"retry {i+1}/{max_retries}")
+                    while i < max_retries:
+                        try:
+                            embedding_one = self._embed_one(chunk)
+                            break
+                        except Exception as e:
+                            print(f"Embedding 失败: {e}")
+                            i += 1
+                            print(f"retry {i+1}/{max_retries}")
+                            time.sleep(2 ** i)  # 指数退避
+                embeddings.append(embedding_one)
+                time.sleep(3)
+                
         self.situation_collection.add(
             documents=docs,
             metadatas=[{"recommendation": rec, "chunk_of": str(i), "chunk_seq": seq}
@@ -59,7 +79,24 @@ class FinancialSituationMemory:
         # 每段分别查 top n_matches，再把结果合并
         merged = []
         for chunk in query_chunks:
-            emb = self._embed_one(chunk)
+            # retry和失败之后暂停机制
+            try:
+                emb = self._embed_one(chunk)
+            except Exception as e:
+                print(f"Embedding 失败: {e}")
+                max_retries = 5
+                i = 0
+                print(f"retry {i+1}/{max_retries}")
+                time.sleep(3)
+                while i < max_retries:
+                    try:
+                        emb = self._embed_one(chunk)
+                        break
+                    except Exception as e:
+                        print(f"Embedding 失败: {e}")
+                        i += 1
+                        print(f"retry {i+1}/{max_retries}")
+                        time.sleep(2 ** i)  # 指数退避
             res = self.situation_collection.query(
                 query_embeddings=[emb],
                 n_results=n_matches,
@@ -71,9 +108,16 @@ class FinancialSituationMemory:
                     "recommendation": meta["recommendation"],
                     "similarity_score": 1 - dist
                 })
+            time.sleep(3)
         # 按相似度降序取前 n_matches
         merged.sort(key=lambda x: x["similarity_score"], reverse=True)
-        return merged[:n_matches]
+        # 合并时去重（保留相似度最高的）
+        unique = {}
+        for item in merged:
+            key = (item["matched_situation"], item["recommendation"])
+            if key not in unique or item["similarity_score"] > unique[key]["similarity_score"]:
+                unique[key] = item
+        return list(unique.values())[:n_matches]
 
     # ---------- 对外接口：单文本 embedding（保持兼容） ----------
     def get_embedding(self, text: str) -> List[float]:
@@ -102,7 +146,8 @@ def main():
     Market showing increased volatility in tech sector, with institutional investors 
     reducing positions and rising interest rates affecting growth stock valuations
     """*400
-    recommendations = matcher.get_memories(current_situation, n_matches=2)
+    for i in range(10):
+        recommendations = matcher.get_memories(current_situation, n_matches=2)
     print("=== 金融情景匹配结果 ===")
     for i, rec in enumerate(recommendations, 1):
         print(f"\n匹配结果 {i}:")

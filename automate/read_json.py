@@ -99,10 +99,12 @@ def get_previous_tickers(date:str, look_back:int=30):
     save_path = os.getenv("SAVE_FOLDER")
     for previous_date in previous_dates:
         if not os.path.exists(f"{save_path}/eval_results/{previous_date}/decisions"):
-            print("path: ", f"{save_path}/eval_results/{previous_date}/decisions")
+            print("path: ", f"{save_path}/eval_results/{previous_date}/decisions", " does not exist", end="; ")
             print(f"{previous_date} has no decisions folder")
             continue
         # list all files in the folder in the format of {ticker_name}.txt, and record ticker_name
+        print(f"=== {previous_date} ===")
+        print("found following tickers: ", end="")
         files = os.listdir(f"{save_path}/eval_results/{previous_date}/decisions")
         print(files)
         for file in files:

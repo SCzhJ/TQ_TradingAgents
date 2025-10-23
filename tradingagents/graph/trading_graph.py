@@ -83,7 +83,12 @@ class TradingAgentsGraph:
             api_key=self.config["api_key"],
             base_url=self.config["backend_url"],
             )
-        self.quick_thinking_llm = self.deep_thinking_llm
+        self.quick_thinking_llm = ThrottledChatOpenAI(
+            tpm=self.config["tpm"],
+            model=self.config["quick_think_llm"], 
+            api_key=self.config["api_key"],
+            base_url=self.config["backend_url"],
+            )
         
         # Initialize memories with unique names to avoid conflicts
         instance_id = self.config.get('instance_id', '')
@@ -246,6 +251,7 @@ class TradingAgentsGraph:
         }
 
         save_path = os.getenv("SAVE_FOLDER")
+        print(f"save_path: {save_path}")
         # # Save to file
         directory = Path(f"{save_path}/eval_results/{trade_date}/TradingAgentsStrategy_logs/")
         directory.mkdir(parents=True, exist_ok=True)

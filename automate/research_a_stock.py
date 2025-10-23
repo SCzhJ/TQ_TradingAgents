@@ -18,7 +18,7 @@ load_dotenv()
 # Create a custom config
 config = DEFAULT_CONFIG.copy()
 
-config["tpm"] = os.getenv("TPM", 1500)
+config["tpm"] = os.getenv("TPM", 1000000)
 
 LLM_PROVIDER = os.getenv("LLM_PROVIDER")
 config["llm_provider"] = LLM_PROVIDER
@@ -40,7 +40,7 @@ elif LLM_PROVIDER == "dashscope":
     config["backend_url"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
     config["api_key"] = os.getenv("DASHSCOPE_API_KEY")
     config["deep_think_llm"] = "qwen3-max"
-    config["quick_think_llm"] = "qwen3-max"  # Use a different model
+    config["quick_think_llm"] = "qwen-flash"  # Use a different model
     if not config["api_key"]:
         raise ValueError("DASHSCOPE_API_KEY not found in environment variables")
 else:
@@ -66,6 +66,7 @@ _, decision = ta.propagate(args.ticker, args.date)
 print("decision:", decision)
 
 save_path = os.getenv("SAVE_FOLDER")
+print(f"save_path: {save_path}")
 # 保存决策到txt文件
 if not os.path.exists(f"{save_path}/eval_results/{args.date}/decisions"):
     os.makedirs(f"{save_path}/eval_results/{args.date}/decisions")
