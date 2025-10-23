@@ -201,7 +201,7 @@ def scan_resistance_breakout(universe: list[str], relative_volume_threshold: flo
                         col('ADRP') < 10, 
                         col('RSI').between(50, 80), 
                         col('Perf.6M') > 10, 
-                        col('high').above_pct('DonchCh20.Upper', 0.97),
+                        col('close').above_pct('DonchCh20.Upper', 0.97),
                         col('relative_volume_10d_calc') > 1.2,  # Volume spike
                         col('Stoch.K') > col('Stoch.D'),  # Stochastic bullish
                         col('ADX') > 24,  # Trend strength
@@ -306,7 +306,7 @@ def scan_breakout_comprehensive(universe: list[str], relative_volume_threshold: 
                         col('ADX') > 25,  # Strong trend
                         col('RSI30') > 45,  # Bullish momentum
                         col('RSI30') < 75,  # Not extremely overbought
-                        col('high').above_pct('DonchCh20.Upper', 0.97),
+                        col('close').above_pct('DonchCh20.Upper', 0.97),
                         col('Stoch.K') > col('Stoch.D'),  # Stochastic bullish
                         col('SMA10') > col('SMA30'),  # Short MA above medium MA
                         col('Perf.5Y') > 20,

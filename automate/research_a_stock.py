@@ -39,8 +39,8 @@ elif LLM_PROVIDER == "siliconflow":
 elif LLM_PROVIDER == "dashscope":
     config["backend_url"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
     config["api_key"] = os.getenv("DASHSCOPE_API_KEY")
-    config["deep_think_llm"] = "qwen3-max"
-    config["quick_think_llm"] = "qwen-flash"  # Use a different model
+    config["deep_think_llm"] = os.getenv("DEEPTHINK_MODEL", "qwen3-max")
+    config["quick_think_llm"] = os.getenv("QUICKTHINK_MODEL", "qwen-flash")
     if not config["api_key"]:
         raise ValueError("DASHSCOPE_API_KEY not found in environment variables")
 else:

@@ -560,7 +560,7 @@ def scan_breakout_comprehensive():
                     col('ADX') > 25,  # Strong trend
                     col('RSI30') > 45,  # Bullish momentum
                     col('RSI30') < 75,  # Not extremely overbought
-                    col('high').above_pct('DonchCh20.Upper',0.98),
+                    col('close').above_pct('DonchCh20.Upper',0.97),
                     col('Stoch.K') > col('Stoch.D'),  # Stochastic bullish
                     col('SMA10') > col('SMA30'),  # Short MA above medium MA
                     col('ADRP') < 10,

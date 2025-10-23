@@ -71,7 +71,20 @@ def scan_and_research():
         f.write("\n")
     
     for ticker in list_of_tickers:
-        run_research_a_stock(ticker, formatted_date)
+        MAX_RETRIES = 3
+        i = 0
+        while i < MAX_RETRIES:
+            try:
+                run_research_a_stock(ticker, formatted_date)
+                break
+            except Exception as e:
+                i += 1
+                print(e)
+                print(f"retry {i}/{MAX_RETRIES} for {ticker} {formatted_date}")
+                time.sleep(3)
+        if i == MAX_RETRIES:
+            print(f"failed after {MAX_RETRIES} retries for {ticker} {formatted_date}")
+
 
 if __name__ == "__main__":
     scan_and_research()
