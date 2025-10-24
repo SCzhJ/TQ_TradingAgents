@@ -2,11 +2,20 @@ import time
 import json
 
 def create_swing_trader(llm):
-    def swing_trader_node(state) -> dict:
-        market_research_report = state["market_report"]
-        sentiment_report = state["sentiment_report"]
-        news_report = state["news_report"]
-        fundamentals_report = state["fundamentals_report"]
+    def swing_trader_node(path, ticker_name) -> dict:
+        market_research_report_path = f"{path}/{ticker_name}/{ticker_name}_0_market_report.txt"
+        sentiment_report_path = f"{path}/{ticker_name}/{ticker_name}_1_sentiment_report.txt"
+        news_report_path = f"{path}/{ticker_name}/{ticker_name}_2_news_report.txt"
+        fundamentals_report_path = f"{path}/{ticker_name}/{ticker_name}_3_fundamentals_report.txt"
+        
+        with open(market_research_report_path, "r") as f:
+            market_research_report = f.read()
+        with open(sentiment_report_path, "r") as f:
+            sentiment_report = f.read()
+        with open(news_report_path, "r") as f:
+            news_report = f.read()
+        with open(fundamentals_report_path, "r") as f:
+            fundamentals_report = f.read()
 
         curr_situation = f"{market_research_report}\n\n{sentiment_report}\n\n{news_report}\n\n{fundamentals_report}"
 

@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import datetime
 
 import argparse, sys, os
+import yfinance as yf
 
 # parse arguments
 parser = argparse.ArgumentParser(description='research a stock')
@@ -57,10 +58,32 @@ config["data_vendors"] = {
 }
 
 # Initialize with custom config
+
+def company_name(ticker: str) -> str | None:
+    """
+    Return the official company name for a given ticker symbol.
+    Returns None if the ticker is invalid or the name is not available.
+    """
+    try:
+        return yf.Ticker(ticker).info['longName']
+    except (KeyError, IndexError, Exception):
+        return None
+
+try:
+    company = company_name(args.ticker)
+except Exception as e:
+    print(f"exception when getting company name for {args.ticker}")
+    print(e)
+    raise ValueError(f"failed to get company name for {args.ticker}")
+
+print("===============================================")
+print(f"researching {args.ticker} ({company}) on {args.date}")
+print("===============================================")
+
 ta = TradingAgentsGraph(debug=True, config=config)
 
 # forward propagate
-_, decision = ta.propagate(args.ticker, args.date)
+_, decision = ta.propagate(company_name=company, trade_date=args.date, ticker_name=args.ticker)
 
 # decision = "BUY" # a test variable
 print("decision:", decision)

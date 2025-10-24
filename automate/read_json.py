@@ -90,7 +90,7 @@ def calculate_previous_dates(current_date:str, look_back:int=30):
         previous_dates.append(previous_date.strftime(date_format))
     return previous_dates
 
-def get_previous_tickers(date:str, look_back:int=30):
+def get_previous_tickers(date:str, look_back:int=14):
     '''
     获取之前look_back天的所有股票
     '''

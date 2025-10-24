@@ -50,15 +50,15 @@ def scan_and_research():
     save_path = os.getenv("SAVE_FOLDER")
     formatted_date = datetime.now(ZoneInfo("US/Eastern")).strftime("%Y-%m-%d")
 
-    previous_tickers = get_previous_tickers(formatted_date, 30)
-    df = scan_all(universe_num_each=1000)
+    df = scan_all(universe_num_each=180)
     list_of_tickers = df["name"].tolist()
-    print(f"found: {list_of_tickers}")
-    print(f"previous: {previous_tickers}")
-    list_of_tickers = [ticker for ticker in list_of_tickers if ticker not in previous_tickers]
-    print("research:", list_of_tickers)
 
-    # list_of_tickers = ["VICR"]
+    previous_tickers = get_previous_tickers(date=formatted_date, look_back=7)
+
+    print(f"found: {list_of_tickers}")
+    list_of_tickers = [ticker for ticker in list_of_tickers if ticker not in previous_tickers]
+    print(f"previous: {previous_tickers}")
+    print("research:", list_of_tickers)
 
     if not os.path.exists(f"{save_path}/eval_results/{formatted_date}"):
         os.makedirs(f"{save_path}/eval_results/{formatted_date}")
@@ -79,12 +79,47 @@ def scan_and_research():
                 break
             except Exception as e:
                 i += 1
+                print(f"exception when researching {ticker} in {formatted_date}")
                 print(e)
                 print(f"retry {i}/{MAX_RETRIES} for {ticker} {formatted_date}")
                 time.sleep(3)
         if i == MAX_RETRIES:
             print(f"failed after {MAX_RETRIES} retries for {ticker} {formatted_date}")
+            print(f"skipping {ticker} {formatted_date}")
+    
+def research(stock_name: str):
+    load_dotenv()
 
+    save_path = os.getenv("SAVE_FOLDER")
+    formatted_date = datetime.now(ZoneInfo("US/Eastern")).strftime("%Y-%m-%d")
+
+    list_of_tickers = [stock_name]
+
+    if not os.path.exists(f"{save_path}/eval_results/{formatted_date}"):
+        os.makedirs(f"{save_path}/eval_results/{formatted_date}")
+    with open(f"{save_path}/eval_results/{formatted_date}/tickers.txt", "a") as f:
+        f.write(formatted_date)
+        f.write("\n")
+        f.write(str(list_of_tickers))
+        f.write("\n")
+    
+    for ticker in list_of_tickers:
+        MAX_RETRIES = 3
+        i = 0
+        while i < MAX_RETRIES:
+            try:
+                run_research_a_stock(ticker, formatted_date)
+                break
+            except Exception as e:
+                i += 1
+                print(f"exception when researching {ticker} in {formatted_date}")
+                print(e)
+                print(f"retry {i}/{MAX_RETRIES} for {ticker} {formatted_date}")
+                time.sleep(3)
+        if i == MAX_RETRIES:
+            print(f"failed after {MAX_RETRIES} retries for {ticker} {formatted_date}")
+            print(f"skipping {ticker} {formatted_date}")
 
 if __name__ == "__main__":
     scan_and_research()
+    # research("HP")
