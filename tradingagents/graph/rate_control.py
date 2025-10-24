@@ -2,6 +2,7 @@ from langchain_openai import ChatOpenAI
 import time, os
 from datetime import datetime
 import math
+from zoneinfo import ZoneInfo
 
 class ThrottledChatOpenAI(ChatOpenAI):
     _tpm = None                 # 默认 TPM，可在构造函数里覆盖
@@ -14,18 +15,18 @@ class ThrottledChatOpenAI(ChatOpenAI):
         # super init first to ensure all attributes are set
         super().__init__(**kw)
         self._tpm = int(tpm)
-        print(f"[TPM throttle {datetime.now()}] tpm: {self._tpm}")
+        print(f"[TPM throttle {datetime.now(ZoneInfo("US/Eastern"))}] tpm: {self._tpm}")
     def invoke(self, messages, config=None, **kw):
         if self._prev_time is None and self._prev_token_count is None:
-            self._prev_time = datetime.now()
+            self._prev_time = datetime.now(ZoneInfo("US/Eastern"))
             print(f"[TPM throttle {self._prev_time}] invoking llm")
             response = super().invoke(messages, config=config, **kw)
             self._prev_token_count = response.usage_metadata["total_tokens"]
-            print(f"[TPM throttle {datetime.now()}] input+output {self._prev_token_count} tokens used")
+            print(f"[TPM throttle {datetime.now(ZoneInfo("US/Eastern"))}] input+output {self._prev_token_count} tokens used")
             return response
         else:
-            print(f"[TPM throttle {datetime.now()}] invoking llm")
-            now = datetime.now()
+            print(f"[TPM throttle {datetime.now(ZoneInfo("US/Eastern"))}] invoking llm")
+            now = datetime.now(ZoneInfo("US/Eastern"))
             # calculate time from previous output
             time_diff = (now - self._prev_time).total_seconds()/60
             # Want to ensure give previous output enough cool down time
@@ -36,7 +37,7 @@ class ThrottledChatOpenAI(ChatOpenAI):
                 print(f"[TPM throttle {now}] time_diff {time_diff}, token_buffer {token_buffer},")
                 print(f"[TPM throttle {now}] need to sleep {pause_time} minutes to cover prev_token_count - token_buffer: {self._prev_token_count - token_buffer}")
                 time.sleep(pause_time * 60)
-            self._prev_time = datetime.now()
+            self._prev_time = datetime.now(ZoneInfo("US/Eastern"))
             response = super().invoke(messages, config=config, **kw)
             self._prev_token_count = response.usage_metadata["total_tokens"]
             return response

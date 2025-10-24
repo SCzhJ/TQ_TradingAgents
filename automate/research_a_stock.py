@@ -23,22 +23,21 @@ config["tpm"] = os.getenv("TPM", 1000000)
 
 LLM_PROVIDER = os.getenv("LLM_PROVIDER")
 config["llm_provider"] = LLM_PROVIDER
+config["backend_url"] = os.getenv("BASE_URL")
 if LLM_PROVIDER == "moonshot":
-    config["backend_url"] = "https://api.moonshot.cn/v1"
     config["api_key"] = os.getenv("MOONSHOT_API_KEY")
     config["deep_think_llm"] = "kimi-k2-0905-preview"  # Use a different model
     config["quick_think_llm"] = "kimi-k2-0905-preview"  # Use a different model
     if not config["api_key"]:
         raise ValueError("MOONSHOT_API_KEY not found in environment variables")
-elif LLM_PROVIDER == "siliconflow":
-    config["backend_url"] = "https://api.siliconflow.cn/v1"
-    config["api_key"] = os.getenv("SILICONFLOW_API_KEY")
-    config["deep_think_llm"] = "Qwen/Qwen3-235B-A22B-Instruct-2507"
-    config["quick_think_llm"] = "Qwen/Qwen3-30B-A3B-Instruct-2507"  # Use a different model
-    if not config["api_key"]:
-        raise ValueError("SILICONFLOW_API_KEY not found in environment variables")
+# elif LLM_PROVIDER == "siliconflow":
+#     config["backend_url"] = "https://api.siliconflow.cn/v1"
+#     config["api_key"] = os.getenv("SILICONFLOW_API_KEY")
+#     config["deep_think_llm"] = "Qwen/Qwen3-235B-A22B-Instruct-2507"
+#     config["quick_think_llm"] = "Qwen/Qwen3-30B-A3B-Instruct-2507"  # Use a different model
+#     if not config["api_key"]:
+#         raise ValueError("SILICONFLOW_API_KEY not found in environment variables")
 elif LLM_PROVIDER == "dashscope":
-    config["backend_url"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
     config["api_key"] = os.getenv("DASHSCOPE_API_KEY")
     config["deep_think_llm"] = os.getenv("DEEPTHINK_MODEL", "qwen3-max")
     config["quick_think_llm"] = os.getenv("QUICKTHINK_MODEL", "qwen-flash")

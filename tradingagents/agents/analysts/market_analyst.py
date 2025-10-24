@@ -73,6 +73,9 @@ Volume-Based Indicators:
 
         result = chain.invoke(state["messages"])
 
+        print('market_analyst_node result:')
+        print(result)
+
         report = ""
 
         if len(result.tool_calls) == 0:

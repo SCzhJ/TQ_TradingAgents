@@ -51,6 +51,9 @@ def create_fundamentals_analyst(llm):
 
         result = chain.invoke(state["messages"])
 
+        print('fundamental_analyst_node result:')
+        print(result)
+
         report = ""
 
         if len(result.tool_calls) == 0:

@@ -1,5 +1,5 @@
 from openai import OpenAI
-from .config import get_config
+# from .config import get_config # no longer needed
 import os
 import dotenv
 import json
@@ -56,8 +56,17 @@ def chat_with_web_search(client, messages, model):
     
     return final_response
 
+def _chat_with_retry(client, messages, model, max_attempt=5):
+    for attempt in range(1, max_attempt + 1):
+        try:
+            return chat_with_web_search(client, messages, model)
+        except openai.APITimeoutError as e:
+            wait = 2 ** attempt + random.uniform(0, 1)
+            print(f"[{attempt}/{max_attempt}] 请求超时，{wait:.1f}s 后重试…")
+            time.sleep(wait)
+    raise RuntimeError("多次重试后仍无法连接 Moonshot API")
+
 def get_stock_news_openai(query, start_date, end_date):
-    config = get_config()
     client = OpenAI(
         api_key=MOONSHOT_API_KEY,
         base_url="https://api.moonshot.cn/v1"  # Moonshot API 端点
@@ -74,11 +83,10 @@ def get_stock_news_openai(query, start_date, end_date):
         }
     ]
 
-    response = chat_with_web_search(client, messages, "kimi-k2-0905-preview")
+    response = _chat_with_retry(client, messages, "kimi-k2-0905-preview")
     return response
 
 def get_global_news_openai(curr_date, look_back_days=7, limit=5):
-    config = get_config()
     client = OpenAI(
         api_key=MOONSHOT_API_KEY,
         base_url="https://api.moonshot.cn/v1"
@@ -95,11 +103,10 @@ def get_global_news_openai(curr_date, look_back_days=7, limit=5):
         }
     ]
 
-    response = chat_with_web_search(client, messages, "kimi-k2-0905-preview")
+    response = _chat_with_retry(client, messages, "kimi-k2-0905-preview")
     return response
 
 def get_fundamentals_openai(ticker, curr_date):
-    config = get_config()
     client = OpenAI(
         api_key=MOONSHOT_API_KEY,
         base_url="https://api.moonshot.cn/v1"
@@ -116,8 +123,11 @@ def get_fundamentals_openai(ticker, curr_date):
         }
     ]
 
-    response = chat_with_web_search(client, messages, "kimi-k2-0905-preview")
+    response = _chat_with_retry(client, messages, "kimi-k2-0905-preview")
     return response
+
+if __name__ == "__main__":
+    print(get_stock_news_openai("TSLA", "2025-10-01", "2025-10-07"))
 
 # from openai import OpenAI
 # from .config import get_config

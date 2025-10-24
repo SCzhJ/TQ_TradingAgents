@@ -47,6 +47,9 @@ def create_social_media_analyst(llm):
 
         result = chain.invoke(state["messages"])
 
+        print('social_media_analyst_node result:')
+        print(result)
+
         report = ""
 
         if len(result.tool_calls) == 0:

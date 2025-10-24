@@ -117,6 +117,12 @@ def condition_scan(
 
 REGULAR_SELECT = ['name', 'change', 'close', 'Perf.6M', 'Perf.3M', 'Perf.1M', 'volume', 'relative_volume_10d_calc', 'RSI', 'gap_up']
 
+'''
+10.24
+抛弃ADX指标。发现删除后扫出更多breakout模式
+
+'''
+
 COMMON_CONDITION = [
     col('exchange').isin(['NYSE', 'NASDAQ']), col('market_cap_basic') > 1000_000_000, 
     col('volume') > 500_000, col('ADRP') < 10, col('Perf.6M') > 20, col('close') > 10,
@@ -125,10 +131,8 @@ RESISTANCE_CONDITION = [
     col('close').above_pct('DonchCh20.Upper', 0.97),
     col('relative_volume_10d_calc') > 1.2,  # Volume spike
     col('Stoch.K') > col('Stoch.D'),  # Stochastic bullish
-    col('ADX') > 24,  # Trend strength
 ]
 COMPREHENSIVE_CONDITION = [
-    col('ADX') > 25,  # Strong trend
     col('RSI30') > 45,  # Bullish momentum
     col('RSI30') < 75,  # Not extremely overbought
     col('close').above_pct('DonchCh20.Upper', 0.97),
@@ -143,18 +147,16 @@ MACD_CONDITION = [
 ]
 BOLLINGER_CONDITION = [
     col('close').crosses_above('BB.upper'),
-    col('ADX') > 25,  # Strong trend
     col('close').above_pct('price_52_week_high', 0.95), # Near 52-week highs
 ]
 GAP_CONDITION = [
     col('gap_up') > 8.0,
     col('close') > col('open'),  # Closed higher than opened
-    col('ADX') > 20,  # Trend strength
     col('close') > col('SMA20'),  # Above 20-day MA
     col('SMA20') > col('SMA50'),  # 20 MA above 50 MA
 ]
 
-def scan_all(universe_num_each: int=500, relative_volume_threshold: float=1.25, change_threshold: float=0.45, max_retries: int = 3):
+def scan_all(universe_num_each: int=500, relative_volume_threshold: float=1.3, change_threshold: float=0.9, max_retries: int = 3):
     """
     Run all breakout scans with enhanced error handling and retry support
     """
@@ -177,11 +179,11 @@ def scan_all(universe_num_each: int=500, relative_volume_threshold: float=1.25, 
         
         MAX_ITER = 5
         iter_count = 0
-        TARGET_LENGTH = 20
+        TARGET_LENGTH = 30
         current_length = 100
         
         while current_length > TARGET_LENGTH and iter_count < MAX_ITER:
-            relative_volume_threshold += 0.025
+            relative_volume_threshold += 0.03
             change_threshold += 0.05
             
             print(f"Iteration {iter_count+1}/{MAX_ITER}: Using volume threshold {relative_volume_threshold:.3f}, change threshold {change_threshold:.2f}")
@@ -252,14 +254,10 @@ def scan_all(universe_num_each: int=500, relative_volume_threshold: float=1.25, 
             print(df)
         else:
             print("No stocks found with breakout patterns after all attempts.")
-        
         return df
-        
     except Exception as e:
         print(f"Critical error in scan_all: {e}")
         return pd.DataFrame()
-    
-
 
 if __name__=="__main__":
     # scan_gap_breakout()
