@@ -125,7 +125,7 @@ REGULAR_SELECT = ['name', 'change', 'close', 'Perf.6M', 'Perf.3M', 'Perf.1M', 'v
 
 COMMON_CONDITION = [
     col('exchange').isin(['NYSE', 'NASDAQ']), col('market_cap_basic') > 1000_000_000, 
-    col('volume') > 500_000, col('ADRP') < 10, col('Perf.6M') > 20, col('close') > 10,
+    col('average_volume_30d_calc') > 500_000, col('ADRP') < 10, col('Perf.6M') > 20, col('close') > 10,
 ]
 RESISTANCE_CONDITION = [
     col('close').above_pct('DonchCh20.Upper', 0.97),

@@ -4780,6 +4780,7 @@ dependencies = [
     { name = "langchain-google-genai" },
     { name = "langchain-openai" },
     { name = "langgraph" },
+    { name = "openai" },
     { name = "pandas" },
     { name = "parsel" },
     { name = "praw" },
@@ -4791,6 +4792,7 @@ dependencies = [
     { name = "setuptools" },
     { name = "stockstats" },
     { name = "tqdm" },
+    { name = "tradingview-screener" },
     { name = "tushare" },
     { name = "typing-extensions" },
     { name = "yfinance" },
@@ -4811,6 +4813,7 @@ requires-dist = [
     { name = "langchain-google-genai", specifier = ">=2.1.5" },
     { name = "langchain-openai", specifier = ">=0.3.23" },
     { name = "langgraph", specifier = ">=0.4.8" },
+    { name = "openai", specifier = ">=1.86.0" },
     { name = "pandas", specifier = ">=2.3.0" },
     { name = "parsel", specifier = ">=1.10.0" },
     { name = "praw", specifier = ">=7.8.1" },
@@ -4822,9 +4825,23 @@ requires-dist = [
     { name = "setuptools", specifier = ">=80.9.0" },
     { name = "stockstats", specifier = ">=0.6.5" },
     { name = "tqdm", specifier = ">=4.67.1" },
+    { name = "tradingview-screener", specifier = ">=3.0.0" },
     { name = "tushare", specifier = ">=1.4.21" },
     { name = "typing-extensions", specifier = ">=4.14.0" },
     { name = "yfinance", specifier = ">=0.2.63" },
+]
+
+[[package]]
+name = "tradingview-screener"
+version = "3.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pandas" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b9/f0/ffdc1b0b721d78e179176931f6368d361c8da40d7e934ded715a879d217b/tradingview_screener-3.0.0.tar.gz", hash = "sha256:4f55c8be2da7cf349af54dbad5dee777a80c397ec67a66e50feefc9fee3dbb76", size = 20120, upload-time = "2025-01-04T21:24:10.157Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9c/f4/f49626250505c8f281b128c1d50f9c380e2c7b21d78c15087245b5b172c5/tradingview_screener-3.0.0-py3-none-any.whl", hash = "sha256:771637deb32313c5f3f038e40e24bbe0efbb97dfa5d5c46b8ee63f30ed0a2ead", size = 19139, upload-time = "2025-01-04T21:24:08.871Z" },
 ]
 
 [[package]]

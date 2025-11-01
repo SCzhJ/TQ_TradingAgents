@@ -8,8 +8,32 @@ from .trading_view_screener import *
 from .tv_screen import *
 from dotenv import load_dotenv
 import time
+import yfinance as yf
+
+def company_name(ticker: str) -> str | None:
+    try:
+        return yf.Ticker(ticker).info['longName']
+    except (KeyError, IndexError, Exception):
+        return None
 
 def run_research_a_stock(ticker:str, date:str):
+    '''Run research_a_stock for a stock
+
+    Parameters:
+    ticker: stock ticker symbol
+    date: date in format YYYY-MM-DD
+    company: company name
+    save_path: path to save the results
+
+    return: None
+    '''
+    try:
+        company = company_name(ticker)
+    except Exception as e:
+        print(f"exception when getting company name for {ticker}")
+        print(e)
+        raise ValueError(f"failed to get company name for {ticker}")
+
     save_path = os.getenv("SAVE_FOLDER")
     print(f"save_folder: {save_path}")
 
@@ -19,7 +43,8 @@ def run_research_a_stock(ticker:str, date:str):
     print("researching ...")
     # get current folder
     current_folder = os.path.dirname(os.path.abspath(__file__))
-    result = subprocess.run([sys.executable, os.path.join(current_folder, 'research_a_stock.py'), ticker, date], capture_output=True, text=True)
+    print(f"current_folder: {current_folder}")
+    result = subprocess.run([sys.executable, os.path.join(current_folder, 'research_a_stock.py'), ticker, date, company], capture_output=True, text=True)
 
     # 将stdout和stderr分别存到output文件夹里的{ticker}_stdout.txt和{ticker}_stderr.txt
     if not os.path.exists(f"{save_path}/eval_results/{date}/output"):

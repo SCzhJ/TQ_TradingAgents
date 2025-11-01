@@ -69,10 +69,22 @@ def save_in_txt(date:str, ticker:str, report:str, name:str):
     with open(f"{save_path}/eval_results/{date}/reports/{ticker}/{ticker}_{name}.txt", "w", encoding='utf-8') as f:
         f.write(report)
 
+def save_in_md(date:str, ticker:str, report:str, name:str):
+    '''
+    保存每个报告的txt文件
+    '''
+    save_path = os.getenv("SAVE_FOLDER")
+    # make directory
+    if not os.path.exists(f"{save_path}/eval_results/{date}/reports/{ticker}"):
+        os.makedirs(f"{save_path}/eval_results/{date}/reports/{ticker}")
+    
+    with open(f"{save_path}/eval_results/{date}/reports/{ticker}/{ticker}_{name}.md", "w", encoding='utf-8') as f:
+        f.write(report)
+
 def save_each_report(date:str, ticker:str):
     all_report = get_each_report(date, ticker)
     for key, value in all_report.items():
-        save_in_txt(date, ticker, value, key)
+        save_in_md(date, ticker, value, key)
 
 def calculate_previous_dates(current_date:str, look_back:int=30):
     '''

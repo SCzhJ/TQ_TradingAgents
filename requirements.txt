@@ -24,4 +24,3 @@ rich
 questionary
 openai
 tradingview-screener
-dashscope

@@ -4,14 +4,14 @@ from dotenv import load_dotenv
 import datetime
 
 import argparse, sys, os
-import yfinance as yf
 
 # parse arguments
 parser = argparse.ArgumentParser(description='research a stock')
 parser.add_argument('ticker', type=str, help='the ticker of the stock')
 parser.add_argument('date', type=str, help='the date to research')
+parser.add_argument('company_name', type=str, help='the company name of the stock')
 args = parser.parse_args()           # 解析完后所有结果都挂在 args 上
-print(f'Research {args.ticker} on {args.date}')
+print(f'Research {args.ticker} on {args.date}, company name: {args.company_name}')
 
 # Load environment variables from .env file
 load_dotenv()
@@ -30,13 +30,6 @@ if LLM_PROVIDER == "moonshot":
     config["quick_think_llm"] = "kimi-k2-0905-preview"  # Use a different model
     if not config["api_key"]:
         raise ValueError("MOONSHOT_API_KEY not found in environment variables")
-# elif LLM_PROVIDER == "siliconflow":
-#     config["backend_url"] = "https://api.siliconflow.cn/v1"
-#     config["api_key"] = os.getenv("SILICONFLOW_API_KEY")
-#     config["deep_think_llm"] = "Qwen/Qwen3-235B-A22B-Instruct-2507"
-#     config["quick_think_llm"] = "Qwen/Qwen3-30B-A3B-Instruct-2507"  # Use a different model
-#     if not config["api_key"]:
-#         raise ValueError("SILICONFLOW_API_KEY not found in environment variables")
 elif LLM_PROVIDER == "dashscope":
     config["api_key"] = os.getenv("DASHSCOPE_API_KEY")
     config["deep_think_llm"] = os.getenv("DEEPTHINK_MODEL", "qwen3-max")
@@ -56,33 +49,15 @@ config["data_vendors"] = {
     "news_data": "alpha_vantage",            # Options: openai, alpha_vantage, google, local
 }
 
-# Initialize with custom config
-
-def company_name(ticker: str) -> str | None:
-    """
-    Return the official company name for a given ticker symbol.
-    Returns None if the ticker is invalid or the name is not available.
-    """
-    try:
-        return yf.Ticker(ticker).info['longName']
-    except (KeyError, IndexError, Exception):
-        return None
-
-try:
-    company = company_name(args.ticker)
-except Exception as e:
-    print(f"exception when getting company name for {args.ticker}")
-    print(e)
-    raise ValueError(f"failed to get company name for {args.ticker}")
 
 print("===============================================")
-print(f"researching {args.ticker} ({company}) on {args.date}")
+print(f"researching {args.ticker} ({args.company_name}) on {args.date}")
 print("===============================================")
 
 ta = TradingAgentsGraph(debug=True, config=config)
 
 # forward propagate
-_, decision = ta.propagate(company_name=company, trade_date=args.date, ticker_name=args.ticker)
+_, decision = ta.propagate(company_name=args.company_name, trade_date=args.date, ticker_name=args.ticker)
 
 # decision = "BUY" # a test variable
 print("decision:", decision)
@@ -95,9 +70,5 @@ if not os.path.exists(f"{save_path}/eval_results/{args.date}/decisions"):
 with open(f"{save_path}/eval_results/{args.date}/decisions/{args.ticker}.txt", "w") as f:
     f.write(decision)
 
-# test
-# a = 0
-# b = 5/a
-# print(b)
 # Memorize mistakes and reflect
 # ta.reflect_and_remember(1000) # parameter is the position returns

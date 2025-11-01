@@ -20,9 +20,15 @@ sentence transformer有的时候会自动下载，
 我们手动下载到memory.py的相应文件夹里
 先pip安装huggingface
 huggingface-cli download sentence-transformers/all-MiniLM-L6-v2 ^ --local-dir ./all-MiniLM-L6-v2
+(10.26 以上方案抛弃, 改用qwen国际版api)
 
 10.19
 尝试siliconflow的qwen3 235 think
 
 tbc added siliconflow qwen, but rate limit is too much
 tomorrow: check tiktoken, try kimi-k2's TPM solution
+
+
+10.24 22:18
+今天扫出来的十几个股票里唯二buy的Kalu目前来看涨幅最高，parr目前涨幅也可以不过30min成交量没有达到条件没有买入。
+今天持仓有amd wds kalu
